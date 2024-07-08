@@ -7,6 +7,5 @@ gdown
 tqdm
 Pillow
 opencv-python
-tensorflow==1.9.0
-keras==2.2.0
+
 
