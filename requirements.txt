@@ -1,0 +1,10 @@
+face_recognition
+fastapi.responses import JSONResponse
+sqlalchemy import create_engine
+pyodbc
+fastapi import  FastAPI, HTTPException,UploadFile,File
+typing import List
+pandas as pd
+tempfile import NamedTemporaryFile
+shutil
+os
