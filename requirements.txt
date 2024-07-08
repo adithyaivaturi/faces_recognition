@@ -1,10 +1,12 @@
 face_recognition
-fastapi.responses import JSONResponse
-sqlalchemy import create_engine
+fastapi
+sqlalchemy
 pyodbc
-fastapi import  FastAPI, HTTPException,UploadFile,File
-typing import List
-pandas as pd
-tempfile import NamedTemporaryFile
-shutil
-os
+pandas
+gdown
+tqdm
+Pillow
+opencv-python
+tensorflow==1.9.0
+keras==2.2.0
+
