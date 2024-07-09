@@ -1,4 +1,3 @@
-import face_recognition
 from fastapi.responses import JSONResponse
 from sqlalchemy import create_engine
 import pyodbc
@@ -8,6 +7,7 @@ import pandas as pd
 from tempfile import NamedTemporaryFile
 import shutil
 import os
+from deepface import DeepFace
 
 # Define the connection string for SQL Server using pyodbc
 conn_str = (
@@ -29,27 +29,17 @@ async def compare_faces(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, tmp)
             tmp_path = tmp.name
 
-        unknown_image = face_recognition.load_image_file(tmp_path)
-        unknown_encoding = face_recognition.face_encodings(unknown_image)[0]
-        data = get_face_recognition_data()
+        # Use DeepFace to detect and compare faces
+        result = DeepFace.verify(tmp_path, model_name="Facenet", enforce_detection=False)
 
-        match_found = False
-        match_details = {"match": False, "message": "These are different people.", "MCode": "", "MName": ""}
+        match_details = {"match": result["verified"], "message": "", "MCode": "", "MName": ""}
 
-        for i in data:
-            known_image = face_recognition.load_image_file(i['Photo'])
-            known_encoding = face_recognition.face_encodings(known_image)[0]
-            results = face_recognition.compare_faces([known_encoding], unknown_encoding)
-
-            if results[0]:
-                match_details = {
-                    "match": True,
-                    "message": "These are the same person.",
-                    "MCode": i["MCode"],
-                    "MName": i["MName"]
-                }
-                match_found = True
-                break  # Exit the loop once a match is found
+        if result["verified"]:
+            match_details["message"] = "These are the same person."
+            match_details["MCode"] = result["verified"][0]["MCode"]
+            match_details["MName"] = result["verified"][0]["MName"]
+        else:
+            match_details["message"] = "These are different people."
 
         return JSONResponse(content=match_details)
 
@@ -71,3 +61,4 @@ def get_face_recognition_data():
         return {"error": str(e)}
     finally:
         engine.dispose()  # Dispose the engine
+
